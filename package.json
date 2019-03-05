@@ -1,0 +1,19 @@
+{
+  "name": "dom-ii",
+  "version": "1.0.0",
+  "description": "Fun Bus wants you to make their site more interactive. They are relying on you to provide 10 unique events to enhance their site. Explore the many events available to you by using the [MDN events reference](https://developer.mozilla.org/en-US/docs/Web/Events).",
+  "main": "index.html",
+  "scripts": {
+    "start": "live-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WilliamConnatser/DOM-II.git"
+  },
+  "author": "William Connatser",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/WilliamConnatser/DOM-II/issues"
+  },
+  "homepage": "https://github.com/WilliamConnatser/DOM-II#readme"
+}
