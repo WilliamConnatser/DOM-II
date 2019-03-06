@@ -1,5 +1,4 @@
 // Your code goes here
-
 const DOMNodes = {
     navLinks: {
         node: document.querySelectorAll('.nav-link'),
@@ -38,9 +37,9 @@ const DOMNodes = {
     },
     h4s: {
         node: document.getElementsByTagName('h4'),
-        event: 'focus',
+        event: 'mouseleave',
         newStyle: function (element) {
-            element.style.color = 'red';
+            element.style.fontWeight = '900';
         }
     },
     buttons: {
@@ -61,7 +60,7 @@ const DOMNodes = {
         node: document.querySelectorAll('p'),
         event: 'dragstart',
         newStyle: function (element) {
-            element.style.fontSize = 'xx-large';
+            element.style.fontSize = 'x-small';
         }
     },
     allElements: {
@@ -85,6 +84,7 @@ class DOMNodeParser {
         this.originalStyles = [];
         this.nodeType;
 
+        //Detect node prototype and save each nodes' and child nodes' original styles in an array.
         if (NodeList.prototype.isPrototypeOf(this.node)) {
             this.nodeType = 'NodeList';
             this.node.forEach(node => this.originalStyles.push(node));
@@ -98,9 +98,41 @@ class DOMNodeParser {
             this.originalStyles.push(this.node.style);
         }
 
-        this.activateEventListeners(this);
+        //Add event listeners depending on node type
+        switch (this.nodeType) {
+            case 'Element':
+                this.addNodeEventListener(this.node);
+                this.addNodeEventHelper(this.node);
+                break;
+
+            case 'NodeList':
+                this.node.forEach(node => {
+                    this.addNodeEventListener(node, true);
+                    this.addNodeEventHelper(node);
+
+                    if (this.label === 'navLinks') {
+                        node.addEventListener('click', event => {
+                            this.updateHelper(`${this.label} is triggered by ${this.event}`);
+                            event.preventDefault();
+                        });
+                    }
+                });
+                break;
+
+            case 'HTMLCollection':
+                Array.from(this.node).forEach(node => {
+                    this.addNodeEventListener(node, true);
+                    this.addNodeEventHelper(node);
+                });
+        }
     }
 
+    //Toggles styles
+    toggleStyle() {
+        this.newStyleActive ? this.deactivateStyle() : this.activateStyle();
+    }
+
+    //Sets style to new style
     activateStyle() {
         this.newStyleActive = true;
 
@@ -120,6 +152,7 @@ class DOMNodeParser {
         }
     }
 
+    //Resets style to default
     deactivateStyle() {
         this.newStyleActive = false;
 
@@ -139,57 +172,21 @@ class DOMNodeParser {
         }
     }
 
-    updateHelper(message) {
-        this.helper.textContent = message;
+    //Adds event listeners
+    addNodeEventListener(node, stopProp) {
+        node.addEventListener(this.event, event => {
+            console.log(`${this.label} triggered ${this.event} to ${this.newStyleActive ? 'Deactivate' : 'Activate'} the Styles.`);
+            if (stopProp) event.stopPropagation();
+            this.toggleStyle();
+        });
     }
 
-    activateEventListeners() {
-        switch (this.nodeType) {
-            case 'Element':
-                this.node.addEventListener(this.event, _ => {
-                    console.log(`${this.label} triggered ${this.event} to ${this.newStyleActive ? 'Deactivate' : 'Activate'} the Styles.`);
-                    this.toggleStyle();
-                });
-                this.node.addEventListener('mouseover', _ => {
-                    this.updateHelper(`${this.label} is triggered by ${this.event}`);
-                });
-                break;
-
-            case 'NodeList':
-                this.node.forEach(node => {
-                    node.addEventListener(this.event, (event) => {
-                        console.log(`${this.label} triggered ${this.event} to ${this.newStyleActive ? 'Deactivate' : 'Activate'} the Styles.`);
-                        event.stopPropagation();
-                        event.preventDefault();
-                        this.toggleStyle();
-                    });
-
-                    node.addEventListener('mouseover', _ => {
-                        this.updateHelper(`${this.label} is triggered by ${this.event}`);
-                        event.stopImmediatePropagation();
-                    });
-                });
-                break;
-
-            case 'HTMLCollection':
-                Array.from(this.node).forEach(node => {
-                    node.addEventListener(this.event, (event) => {
-                        console.log(`${this.label} triggered ${this.event} to ${this.newStyleActive ? 'Deactivate' : 'Activate'} the Styles.`);
-                        event.stopPropagation();
-                        event.preventDefault();
-                        this.toggleStyle();
-                    });
-
-                    node.addEventListener('mouseover', _ => {
-                        this.updateHelper(`${this.label} is triggered by ${this.event}`);
-                        event.stopImmediatePropagation();
-                    });
-                });
-        }
-    }
-
-    toggleStyle() {
-        this.newStyleActive ? this.deactivateStyle() : this.activateStyle();
+    //Helper that shows what event triggers the element being hovered over
+    addNodeEventHelper(node) {
+        node.addEventListener('mouseover', _ => {
+            this.helper.textContent = `${this.label} is triggered by ${this.event}`;
+            event.stopImmediatePropagation();
+        });
     }
 }
 
