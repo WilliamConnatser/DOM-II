@@ -82,7 +82,6 @@ class DOMNodeParser {
         this.newStyle = params.newStyle;
         this.newStyleActive = false;
         this.originalStyles = [];
-        this.nodeType;
 
         //Detect parent node prototype
         //Make sure they each have forEach and are at least array-like
@@ -108,25 +107,17 @@ class DOMNodeParser {
 
     //Toggles styles
     toggleStyle() {
-        this.newStyleActive ? this.deactivateStyle() : this.activateStyle();
-    }
+        this.newStyleActive = !this.newStyleActive;
 
-    //Sets style to new style
-    activateStyle() {
-        this.newStyleActive = true;
-
-        this.node.forEach(node => {
-            this.newStyle(node);
-        });
-    }
-
-    //Resets style to default
-    deactivateStyle() {
-        this.newStyleActive = false;
-
-        this.node.forEach((node, index) => {
-            node.style = this.originalStyles[index];
-        });
+        if (this.newStyleActive) {
+            this.node.forEach((node, index) => {
+                node.style = this.originalStyles[index];
+            });
+        } else {
+            this.node.forEach(node => {
+                this.newStyle(node);
+            });
+        }
     }
 
     //Adds event listeners
