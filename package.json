@@ -4,7 +4,9 @@
   "description": "Fun Bus wants you to make their site more interactive. They are relying on you to provide 10 unique events to enhance their site. Explore the many events available to you by using the [MDN events reference](https://developer.mozilla.org/en-US/docs/Web/Events).",
   "main": "index.html",
   "scripts": {
-    "start": "live-server"
+    "compile:less": "less-watch-compiler less css index.less",
+    "live-server": "live-server --no-css-inject",
+    "start": "concurrently --names \"less-compiler,live-server\" \"npm run compile:less\" \"live-server\" -k"
   },
   "repository": {
     "type": "git",
@@ -15,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/WilliamConnatser/DOM-II/issues"
   },
-  "homepage": "https://github.com/WilliamConnatser/DOM-II#readme"
+  "homepage": "https://github.com/WilliamConnatser/DOM-II#readme",
+  "dependencies": {
+    "less-watch-compiler": "^1.13.0"
+  }
 }
